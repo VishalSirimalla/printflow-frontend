@@ -1,0 +1,149 @@
+import { useEffect, useState } from 'react';
+import { useParams, useLocation, Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import { MdArrowBack, MdDescription, MdLocationOn, MdEmail } from 'react-icons/md';
+import StudentLayout from '../../layouts/StudentLayout';
+import Card from '../../components/ui/Card';
+import StatusBadge from '../../components/ui/StatusBadge';
+import { CardSkeleton } from '../../components/ui/Skeleton';
+import { orderService } from '../../services/orderService';
+import { formatCurrency, formatDate } from '../../utils/helpers';
+
+export default function StudentOrderDetail() {
+  const { id } = useParams();
+  const location = useLocation();
+  const [order, setOrder] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  // OTP from state (just created) or from order
+  const otp = location.state?.otp || order?.otp;
+  const justCreated = location.state?.justCreated;
+
+  useEffect(() => {
+    orderService.getOrderById(id)
+      .then(({ data }) => setOrder(data.order))
+      .catch(console.error)
+      .finally(() => setLoading(false));
+  }, [id]);
+
+  if (loading) return <StudentLayout><div className="max-w-3xl space-y-4"><CardSkeleton /><CardSkeleton /></div></StudentLayout>;
+  if (!order) return <StudentLayout><p className="text-gray-500">Order not found.</p></StudentLayout>;
+
+  const { file, printSettings, pricing, shop, student } = order;
+
+  return (
+    <StudentLayout>
+      <div className="max-w-3xl">
+        {/* Header */}
+        <div className="flex items-center gap-3 mb-6">
+          <Link to="/orders" className="p-2 text-gray-500 hover:bg-gray-100 rounded-xl">
+            <MdArrowBack className="text-xl" />
+          </Link>
+          <div className="flex-1">
+            <h1 className="text-xl font-bold text-gray-900">Order Details</h1>
+            <p className="text-sm text-gray-500 font-mono">{order.orderId}</p>
+          </div>
+          <StatusBadge status={order.status} />
+        </div>
+
+        {/* OTP Banner - shown prominently */}
+        {justCreated && otp && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="bg-green-50 border-2 border-green-200 rounded-2xl p-6 mb-6 text-center"
+          >
+            <p className="text-green-800 font-semibold text-lg mb-1">🎉 Order Placed Successfully!</p>
+            <p className="text-green-600 text-sm mb-4">Show this OTP to the print shop owner to verify your order.</p>
+            <div className="bg-white rounded-xl px-8 py-4 inline-block border border-green-200">
+              <p className="text-xs text-gray-500 mb-1">Your OTP</p>
+              <p className="text-5xl font-bold text-blue-700 font-mono tracking-[0.3em]">{otp}</p>
+            </div>
+            <p className="text-xs text-green-600 mt-3">Keep this OTP safe. Do not share with anyone else.</p>
+          </motion.div>
+        )}
+
+        <div className="grid grid-cols-2 gap-4">
+          {/* Student Details */}
+          <Card className="p-5">
+            <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-3">Student Details</p>
+            <p className="text-xl font-bold text-gray-900">{student?.fullName}</p>
+            <p className="text-sm text-gray-500 mt-1">{student?.college}</p>
+            <div className="flex items-center gap-2 mt-3 text-sm text-gray-500">
+              <MdEmail className="text-blue-500" />
+              {student?.email}
+            </div>
+          </Card>
+
+          {/* OTP for active orders */}
+          {!justCreated && otp && !['completed', 'cancelled'].includes(order.status) && (
+            <Card className="p-5 border-2 border-blue-100">
+              <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-3">Your OTP</p>
+              <p className="text-4xl font-bold text-blue-700 font-mono tracking-widest">{otp}</p>
+              <p className="text-xs text-gray-400 mt-2">Show this to the shop owner</p>
+            </Card>
+          )}
+
+          {/* Print Specifications */}
+          <Card className="p-5 col-span-2">
+            <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-3">Print Specifications</p>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <p className="text-xs text-gray-400">Print Type</p>
+                <p className="font-semibold text-gray-800 mt-0.5">
+                  {printSettings?.color === 'bw' ? 'B&W' : 'Color'} {printSettings?.printSide === 'double' ? 'Double-Sided' : 'Single-Sided'}
+                </p>
+              </div>
+              <div>
+                <p className="text-xs text-gray-400">Paper Size</p>
+                <p className="font-semibold text-gray-800 mt-0.5">{printSettings?.paperSize}</p>
+              </div>
+              <div>
+                <p className="text-xs text-gray-400">Pages / Copies</p>
+                <p className="font-semibold text-gray-800 mt-0.5">{file?.totalPages} Pages • {printSettings?.copies} {printSettings?.copies > 1 ? 'Copies' : 'Copy'}</p>
+              </div>
+              <div>
+                <p className="text-xs text-gray-400">Orientation</p>
+                <p className="font-semibold text-gray-800 mt-0.5">{printSettings?.orientation === 'portrait' ? 'Portrait' : 'Landscape'}</p>
+              </div>
+              {printSettings?.additionalNotes && (
+                <div className="col-span-2">
+                  <p className="text-xs text-gray-400">Notes</p>
+                  <p className="text-sm text-gray-700 mt-0.5">{printSettings.additionalNotes}</p>
+                </div>
+              )}
+            </div>
+            <hr className="my-4" />
+            <div className="flex justify-between items-center">
+              <span className="text-gray-600">Total Amount</span>
+              <span className="text-xl font-bold text-blue-700">{formatCurrency(pricing?.grandTotal)}</span>
+            </div>
+          </Card>
+
+          {/* Shop */}
+          <Card className="p-5">
+            <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-3">Print Shop</p>
+            <p className="font-semibold text-gray-900">{shop?.shopName}</p>
+            <p className="text-sm text-gray-500 flex items-center gap-1 mt-1">
+              <MdLocationOn /> {shop?.shopAddress}
+            </p>
+          </Card>
+
+          {/* File */}
+          <Card className="p-5">
+            <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-3">Document</p>
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center">
+                <MdDescription className="text-blue-700" />
+              </div>
+              <div>
+                <p className="font-semibold text-gray-800 text-sm truncate max-w-[140px]">{file?.fileName}</p>
+                <p className="text-xs text-gray-400 mt-0.5">{file?.totalPages} pages</p>
+              </div>
+            </div>
+          </Card>
+        </div>
+      </div>
+    </StudentLayout>
+  );
+}
