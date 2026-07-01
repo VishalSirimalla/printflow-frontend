@@ -314,8 +314,8 @@ export default function HelpCenter() {
                   </div>
                   <div>
                     <p className="text-xs text-gray-400 mb-0.5">Email</p>
-                    <a href="mailto:support@printflow.com" className="text-sm font-medium text-blue-600 hover:underline">
-                      support@printflow.com
+                    <a href="mailto:printflow9@gmail.com" className="text-sm font-medium text-blue-600 hover:underline">
+                      printflow9@gmail.com
                     </a>
                   </div>
                 </div>
@@ -327,7 +327,7 @@ export default function HelpCenter() {
                   </div>
                   <div>
                     <p className="text-xs text-gray-400 mb-0.5">Phone</p>
-                    <p className="text-sm font-medium text-gray-800">+91 XXXXX XXXXX</p>
+                    <p className="text-sm font-medium text-gray-800">+91 84464 27760</p>
                   </div>
                 </div>
 
@@ -346,13 +346,13 @@ export default function HelpCenter() {
 
               <div className="flex gap-3 pt-4 border-t border-gray-100">
                 <a
-                  href="mailto:support@printflow.com"
+                  href="mailto:printflow9@gmail.com"
                   className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-xl transition-colors"
                 >
                   <Mail size={15} /> Email Support
                 </a>
                 <a
-                  href="tel:+91XXXXXXXXXX"
+                  href="tel:+918446427760"
                   className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-white hover:bg-gray-50 text-gray-700 text-sm font-medium rounded-xl border border-gray-200 transition-colors"
                 >
                   <Phone size={15} /> Call Support
@@ -363,43 +363,10 @@ export default function HelpCenter() {
         )}
 
         {/* ── Useful Links ── */}
-        {!search && (
-          <section>
-            <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">Useful Links</h2>
-            <div className="grid sm:grid-cols-2 gap-2">
-              {USEFUL_LINKS.map((link, i) => (
-                <UsefulLinkCard key={link.label} {...link} index={i} />
-              ))}
-            </div>
-          </section>
-        )}
+        
 
         {/* ── CTA ── */}
-        {!search && (
-          <motion.div
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.15 }}
-            className="bg-gradient-to-r from-blue-600 to-blue-500 rounded-2xl p-6 text-white"
-          >
-            <div className="flex items-center justify-between gap-6 flex-wrap">
-              <div>
-                <h3 className="font-bold text-lg mb-1">Still need help?</h3>
-                <p className="text-blue-100 text-sm">
-                  If you couldn't find the answer you're looking for, our support team is here to assist you.
-                </p>
-              </div>
-              <motion.a
-                href="mailto:support@printflow.com"
-                whileHover={{ scale: 1.03 }}
-                whileTap={{ scale: 0.98 }}
-                className="shrink-0 flex items-center gap-2 bg-white text-blue-600 text-sm font-semibold px-5 py-2.5 rounded-xl hover:bg-blue-50 transition-colors"
-              >
-                <MessageCircle size={15} /> Contact Support
-              </motion.a>
-            </div>
-          </motion.div>
-        )}
+       
 
       </div>
     </StudentLayout>
