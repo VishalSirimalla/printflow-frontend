@@ -161,8 +161,8 @@ export default function UploadPage() {
 
           {/* ── STEP 2: Configure ───────────────────────────────────────── */}
           {step === 2 && (
-            <motion.div key="s2" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="grid grid-cols-3 gap-6">
-              <div className="col-span-2 space-y-6">
+            <motion.div key="s2" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <div className="lg:col-span-2 space-y-6">
                 <h2 className="text-2xl font-bold text-gray-900">Configure Print Settings</h2>
 
                 <Card className="p-6 space-y-5">
@@ -258,7 +258,7 @@ export default function UploadPage() {
               </div>
 
               {/* Price Summary Sidebar */}
-              <div className="col-span-1">
+              <div className="lg:col-span-1">
                 <div className="sticky top-24">
                   <Card className="p-5">
                     <h3 className="font-semibold text-gray-900 mb-4">Price Summary</h3>
@@ -283,7 +283,7 @@ export default function UploadPage() {
                 </div>
               </div>
 
-              <div className="col-span-3 flex justify-between mt-2">
+              <div className="col-span-1 lg:col-span-3 flex justify-between mt-2">
                 <Button variant="secondary" onClick={() => setStep(1)}>← Back</Button>
                 <Button onClick={() => setStep(3)} disabled={!selectedShop} size="lg">Continue to Checkout →</Button>
               </div>
@@ -292,8 +292,8 @@ export default function UploadPage() {
 
           {/* ── STEP 3: Checkout ────────────────────────────────────────── */}
           {step === 3 && (
-            <motion.div key="s3" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="grid grid-cols-3 gap-6">
-              <div className="col-span-2 space-y-4">
+            <motion.div key="s3" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <div className="lg:col-span-2 space-y-4">
                 <h2 className="text-2xl font-bold text-gray-900">Review Your Order</h2>
 
                 <Card className="p-5">
@@ -357,7 +357,7 @@ export default function UploadPage() {
               </div>
 
               {/* Bill Summary */}
-              <div>
+              <div className="lg:col-span-1">
                 <div className="sticky top-24">
                   <Card className="p-5">
                     <h3 className="font-semibold text-gray-900 mb-4">Bill Summary</h3>
@@ -391,7 +391,7 @@ export default function UploadPage() {
                 </div>
               </div>
 
-              <div className="col-span-3 flex justify-start mt-2">
+              <div className="col-span-1 lg:col-span-3 flex justify-start mt-2">
                 <Button variant="secondary" onClick={() => setStep(2)}>← Back</Button>
               </div>
             </motion.div>
@@ -404,8 +404,8 @@ export default function UploadPage() {
 
 function SettingRow({ label, children }) {
   return (
-    <div className="flex items-center justify-between gap-4">
-      <span className="text-sm font-medium text-gray-700 shrink-0 w-28">{label}</span>
+    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-4">
+      <span className="text-sm font-medium text-gray-700 shrink-0 sm:w-28">{label}</span>
       {children}
     </div>
   );

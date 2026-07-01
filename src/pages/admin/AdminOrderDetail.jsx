@@ -99,44 +99,49 @@ export default function AdminOrderDetail() {
 
   return (
     <AdminLayout>
-      <div className="max-w-4xl">
+      <div className="max-w-4xl w-full">
         {/* Header */}
-        <div className="flex items-center gap-3 mb-6">
-          <Link to="/admin/orders" className="p-2 text-gray-500 hover:bg-gray-100 rounded-xl">
+        <div className="flex items-center gap-3 mb-5">
+          <Link to="/admin/orders" className="p-2 text-gray-500 hover:bg-gray-100 rounded-xl min-h-[44px] min-w-[44px] flex items-center justify-center">
             <MdArrowBack className="text-xl" />
           </Link>
-          <div className="flex-1">
-            <h1 className="text-xl font-bold text-gray-900">Order Details</h1>
-            <p className="text-sm text-gray-500 font-mono">{order.orderId}</p>
+          <div className="flex-1 min-w-0">
+            <h1 className="text-lg sm:text-xl font-bold text-gray-900">Order Details</h1>
+            <p className="text-xs sm:text-sm text-gray-500 font-mono truncate">{order.orderId}</p>
           </div>
           <StatusBadge status={order.status} />
         </div>
 
-        <div className="grid grid-cols-5 gap-5">
+        {/* Responsive grid — stacks on mobile */}
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-4 sm:gap-5">
+
           {/* Left: Order Info */}
-          <div className="col-span-2 space-y-4">
+          <div className="lg:col-span-2 space-y-4">
             {/* Student */}
-            <Card className="p-5">
+            <Card className="p-4 sm:p-5">
               <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-3">Student Details</p>
-              <div className="flex items-center gap-1 mb-1">
-                <p className="text-xl font-bold text-gray-900">{student?.fullName}</p>
+              <div className="flex items-center gap-2 mb-1 flex-wrap">
+                <p className="text-lg sm:text-xl font-bold text-gray-900">{student?.fullName}</p>
                 <StatusBadge status={order.status} />
               </div>
-              <p className="text-sm text-gray-500">ID: #{student?._id?.slice(-6).toUpperCase()} • {student?.college}</p>
+              <p className="text-xs sm:text-sm text-gray-500">
+                ID: #{student?._id?.slice(-6).toUpperCase()} • {student?.college}
+              </p>
               <div className="flex items-center gap-2 mt-3 text-sm text-gray-500">
-                <MdEmail className="text-blue-500" />
-                {student?.email}
+                <MdEmail className="text-blue-500 shrink-0" />
+                <span className="truncate">{student?.email}</span>
               </div>
             </Card>
 
             {/* Print Specs */}
-            <Card className="p-5">
+            <Card className="p-4 sm:p-5">
               <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-3">Print Specifications</p>
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <p className="text-xs text-gray-400">Print Type</p>
                   <p className="font-semibold text-gray-800 text-sm mt-0.5">
-                    {printSettings?.color === 'bw' ? 'B&W' : 'Color'} {printSettings?.printSide === 'double' ? 'Double-Sided' : 'Single-Sided'}
+                    {printSettings?.color === 'bw' ? 'B&W' : 'Color'}{' '}
+                    {printSettings?.printSide === 'double' ? 'Double-Sided' : 'Single-Sided'}
                   </p>
                 </div>
                 <div>
@@ -146,7 +151,8 @@ export default function AdminOrderDetail() {
                 <div>
                   <p className="text-xs text-gray-400">Pages / Copies</p>
                   <p className="font-semibold text-gray-800 text-sm mt-0.5">
-                    {file?.totalPages} Pages • {printSettings?.copies} {printSettings?.copies > 1 ? 'Copies' : 'Copy'}
+                    {file?.totalPages} Pages • {printSettings?.copies}{' '}
+                    {printSettings?.copies > 1 ? 'Copies' : 'Copy'}
                   </p>
                 </div>
                 <div>
@@ -169,7 +175,7 @@ export default function AdminOrderDetail() {
 
             {/* Actions */}
             {order.status !== 'completed' && order.status !== 'cancelled' && (
-              <Card className="p-5 space-y-2">
+              <Card className="p-4 sm:p-5 space-y-2">
                 <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-3">Actions</p>
                 {nextAction && (
                   <Button fullWidth variant={nextAction.variant} loading={updating} onClick={() => handleStatusUpdate(nextAction.to)}>
@@ -186,15 +192,15 @@ export default function AdminOrderDetail() {
           </div>
 
           {/* Right: OTP + Document */}
-          <div className="col-span-3 space-y-4">
+          <div className="lg:col-span-3 space-y-4">
             {/* OTP Verification */}
             {!order.otpVerified ? (
-              <Card className="p-6">
-                <div className="flex items-start justify-between mb-4">
+              <Card className="p-4 sm:p-6">
+                <div className="flex items-start justify-between mb-4 gap-3">
                   <div>
-                    <h3 className="text-lg font-bold text-gray-900">Security Verification</h3>
-                    <p className="text-sm text-gray-500 mt-1">
-                      Enter the 6-digit verification code provided by the student to unlock the document for printing.
+                    <h3 className="text-base sm:text-lg font-bold text-gray-900">Security Verification</h3>
+                    <p className="text-xs sm:text-sm text-gray-500 mt-1">
+                      Enter the 6-digit verification code provided by the student to unlock the document.
                     </p>
                   </div>
                   <div className="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center shrink-0">
@@ -203,7 +209,7 @@ export default function AdminOrderDetail() {
                 </div>
 
                 {/* OTP Input */}
-                <div className="flex items-center gap-2 mb-5" onPaste={handleOtpPaste}>
+                <div className="flex items-center gap-1.5 sm:gap-2 mb-5 flex-wrap" onPaste={handleOtpPaste}>
                   {otp.map((digit, i) => (
                     <input
                       key={i}
@@ -217,62 +223,60 @@ export default function AdminOrderDetail() {
                       className={`otp-input ${digit ? 'filled' : ''}`}
                     />
                   ))}
-                  <span className="text-gray-300 text-xl mx-1">-</span>
-                  {/* Extra styling hint: the dash is decorative; actual split is 3-3 visually */}
                 </div>
 
-                <div className="flex gap-3">
-                  <Button onClick={handleVerify} loading={verifying} size="lg">
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <Button onClick={handleVerify} loading={verifying} size="lg" className="w-full sm:w-auto">
                     Verify & Access Files
                   </Button>
                   <Button
                     variant="secondary"
+                    className="w-full sm:w-auto"
                     onClick={() => { setOtp(['', '', '', '', '', '']); inputRefs.current[0]?.focus(); }}
                   >
-                    Resend Code
+                    Clear
                   </Button>
                 </div>
               </Card>
             ) : (
-              <Card className="p-5 border-2 border-green-200 bg-green-50">
+              <Card className="p-4 sm:p-5 border-2 border-green-200 bg-green-50">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-green-600 rounded-xl flex items-center justify-center">
+                  <div className="w-10 h-10 bg-green-600 rounded-xl flex items-center justify-center shrink-0">
                     <MdShield className="text-white text-xl" />
                   </div>
                   <div>
                     <p className="font-semibold text-green-800">OTP Verified Successfully</p>
-                    <p className="text-sm text-green-600">Document is now unlocked. Verified at {formatDate(order.otpVerifiedAt)}</p>
+                    <p className="text-xs sm:text-sm text-green-600">
+                      Document is now unlocked. Verified at {formatDate(order.otpVerifiedAt)}
+                    </p>
                   </div>
                 </div>
               </Card>
             )}
 
-            {/* Document Preview / Locked */}
+            {/* Document */}
             <Card className="overflow-hidden">
               {!order.otpVerified ? (
-                <div className="relative">
-                  {/* Blurred placeholder */}
-                  <div className="h-64 bg-gray-100 flex flex-col items-center justify-center gap-3">
-                    <div className="filter blur-sm select-none pointer-events-none absolute inset-0 flex flex-col gap-2 p-8">
-                      {[...Array(8)].map((_, i) => (
-                        <div key={i} className={`h-3 bg-gray-300 rounded ${i % 3 === 0 ? 'w-3/4' : i % 2 === 0 ? 'w-full' : 'w-1/2'}`} />
-                      ))}
-                    </div>
-                    <div className="relative z-10 flex flex-col items-center gap-2">
-                      <MdLock className="text-4xl text-gray-500" />
-                      <p className="text-sm font-semibold text-gray-600 uppercase tracking-widest">Locked Content</p>
-                    </div>
+                <div className="h-48 sm:h-64 bg-gray-100 flex flex-col items-center justify-center gap-3 relative">
+                  <div className="filter blur-sm select-none pointer-events-none absolute inset-0 flex flex-col gap-2 p-8">
+                    {[...Array(8)].map((_, i) => (
+                      <div key={i} className={`h-3 bg-gray-300 rounded ${i % 3 === 0 ? 'w-3/4' : i % 2 === 0 ? 'w-full' : 'w-1/2'}`} />
+                    ))}
+                  </div>
+                  <div className="relative z-10 flex flex-col items-center gap-2">
+                    <MdLock className="text-4xl text-gray-500" />
+                    <p className="text-sm font-semibold text-gray-600 uppercase tracking-widest">Locked Content</p>
                   </div>
                 </div>
               ) : (
-                <div className="p-5">
-                  <div className="flex items-center justify-between mb-4">
+                <div className="p-4 sm:p-5">
+                  <div className="flex items-center justify-between mb-4 gap-3 flex-wrap">
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center">
+                      <div className="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center shrink-0">
                         <MdDescription className="text-blue-700" />
                       </div>
-                      <div>
-                        <p className="font-semibold text-gray-900">{file?.fileName}</p>
+                      <div className="min-w-0">
+                        <p className="font-semibold text-gray-900 truncate">{file?.fileName}</p>
                         <p className="text-sm text-gray-500">{file?.totalPages} pages</p>
                       </div>
                     </div>
@@ -281,25 +285,24 @@ export default function AdminOrderDetail() {
                       target="_blank"
                       rel="noreferrer"
                       download={file?.fileName}
-                      className="flex items-center gap-2 px-4 py-2 bg-blue-700 text-white rounded-xl text-sm font-medium hover:bg-blue-800 transition-colors"
+                      className="flex items-center gap-2 px-4 py-2 bg-blue-700 text-white rounded-xl text-sm font-medium hover:bg-blue-800 transition-colors shrink-0"
                     >
                       <MdDownload /> Download
                     </a>
                   </div>
 
-                  {/* PDF preview or image */}
                   {file?.fileUrl && (
                     file?.fileName?.endsWith('.pdf') ? (
                       <iframe
                         src={file.fileUrl}
                         title="Document Preview"
-                        className="w-full h-96 rounded-xl border border-gray-200"
+                        className="w-full h-64 sm:h-96 rounded-xl border border-gray-200"
                       />
                     ) : (
                       <img
                         src={file.fileUrl}
                         alt="Document"
-                        className="w-full max-h-96 object-contain rounded-xl border border-gray-200"
+                        className="w-full max-h-64 sm:max-h-96 object-contain rounded-xl border border-gray-200"
                       />
                     )
                   )}

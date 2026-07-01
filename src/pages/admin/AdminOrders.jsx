@@ -41,8 +41,8 @@ export default function AdminOrders() {
 
   return (
     <AdminLayout>
-      <div className="max-w-4xl">
-        <h1 className="text-2xl font-bold text-gray-900 mb-6">Orders</h1>
+      <div className="max-w-4xl w-full">
+        <h1 className="text-xl sm:text-2xl font-bold text-gray-900 mb-5">Orders</h1>
 
         {/* Search */}
         <div className="relative mb-4">
@@ -55,13 +55,13 @@ export default function AdminOrders() {
           />
         </div>
 
-        {/* Tabs */}
-        <div className="flex gap-1 mb-6 overflow-x-auto">
+        {/* Tabs — scrollable on mobile */}
+        <div className="flex gap-1.5 mb-5 overflow-x-auto pb-1">
           {TABS.map(t => (
             <button
               key={t.key}
               onClick={() => setTab(t.key)}
-              className={`shrink-0 py-2 px-4 rounded-xl text-sm font-medium transition-colors
+              className={`shrink-0 py-2 px-3 sm:px-4 rounded-xl text-xs sm:text-sm font-medium transition-colors whitespace-nowrap
                 ${tab === t.key ? 'bg-blue-700 text-white' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'}`}
             >
               {t.label}
@@ -72,9 +72,9 @@ export default function AdminOrders() {
         {loading ? (
           <div className="space-y-3">{[1,2,3].map(i => <OrderCardSkeleton key={i} />)}</div>
         ) : filtered.length === 0 ? (
-          <Card className="p-12 text-center">
+          <Card className="p-10 sm:p-12 text-center">
             <MdListAlt className="text-5xl text-gray-200 mx-auto mb-3" />
-            <p className="text-gray-400">No orders found</p>
+            <p className="text-gray-400 text-sm">No orders found</p>
           </Card>
         ) : (
           <div className="space-y-3">
@@ -86,19 +86,21 @@ export default function AdminOrders() {
                 transition={{ delay: i * 0.05 }}
               >
                 <Link to={`/admin/orders/${order._id}`}>
-                  <Card className="p-5 hover:shadow-md transition-shadow">
-                    <div className="flex items-start justify-between gap-4">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-1">
+                  <Card className="p-4 sm:p-5 hover:shadow-md transition-shadow">
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex flex-wrap items-center gap-2 mb-1">
                           <span className="text-xs font-mono text-gray-400">{order.orderId}</span>
                           <StatusBadge status={order.status} />
                         </div>
-                        <p className="font-semibold text-gray-800">{order.student?.fullName}</p>
-                        <p className="text-sm text-gray-500">{order.student?.college}</p>
-                        <p className="text-xs text-gray-400 mt-1">{order.file?.fileName} • {formatDate(order.createdAt)}</p>
+                        <p className="font-semibold text-gray-800 text-sm">{order.student?.fullName}</p>
+                        <p className="text-xs text-gray-500 truncate">{order.student?.college}</p>
+                        <p className="text-xs text-gray-400 mt-0.5 truncate">
+                          {order.file?.fileName} • {formatDate(order.createdAt)}
+                        </p>
                       </div>
-                      <div className="text-right">
-                        <p className="font-bold text-blue-700">{formatCurrency(order.pricing?.grandTotal)}</p>
+                      <div className="text-right shrink-0">
+                        <p className="font-bold text-blue-700 text-sm">{formatCurrency(order.pricing?.grandTotal)}</p>
                         <p className="text-xs text-gray-400 mt-1">
                           {order.printSettings?.color === 'bw' ? 'B&W' : 'Color'} •{' '}
                           {order.printSettings?.copies} cop{order.printSettings?.copies > 1 ? 'ies' : 'y'}
