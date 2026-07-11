@@ -5,7 +5,6 @@ import { motion } from 'framer-motion';
 import toast from 'react-hot-toast';
 import { MdStore, MdEmail, MdLock, MdPerson, MdPhone, MdLocationOn } from 'react-icons/md';
 import { authService } from '../../services/authService';
-import { useAuth } from '../../context/AuthContext';
 import { getErrorMessage } from '../../utils/helpers';
 import Button from '../../components/ui/Button';
 import Input from '../../components/ui/Input';
@@ -13,22 +12,22 @@ import Input from '../../components/ui/Input';
 export default function AdminRegister() {
   const { register, handleSubmit, formState: { errors } } = useForm();
   const [loading, setLoading] = useState(false);
-  const { login } = useAuth();
   const navigate = useNavigate();
 
-  const onSubmit = async (data) => {
-    setLoading(true);
-    try {
-      const res = await authService.registerAdmin(data);
-      login(res.data.token, res.data.user, 'admin');
-      toast.success('Shop registered successfully!');
-      navigate('/admin/dashboard');
-    } catch (err) {
-      toast.error(getErrorMessage(err));
-    } finally {
-      setLoading(false);
-    }
-  };
+ const onSubmit = async (data) => {
+  setLoading(true);
+  try {
+    const res = await authService.registerAdmin(data);
+
+    toast.success(res.data.message);
+
+    navigate('/admin/login');
+  } catch (err) {
+    toast.error(getErrorMessage(err));
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-100 to-blue-50 flex flex-col items-center justify-center px-4 py-10">
