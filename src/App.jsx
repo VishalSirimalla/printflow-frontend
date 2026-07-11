@@ -10,6 +10,7 @@ import AdminLogin from './pages/auth/AdminLogin';
 import AdminRegister from './pages/auth/AdminRegister';
 import ForgotPassword from './pages/auth/ForgotPassword';
 import ResetPassword from './pages/auth/ResetPassword';
+import VerifyEmail from './pages/auth/VerifyEmail';
 
 // Student Pages
 import StudentDashboard from './pages/student/StudentDashboard';
@@ -52,6 +53,7 @@ export default function App() {
           {/* Forgot Password */}
 <Route path="/forgot-password" element={<ForgotPassword />} />
 <Route path="/reset-password/:token" element={<ResetPassword />} />
+          <Route path="/verify-email/:token" element={<VerifyEmail />} />
 
           {/* Student Protected Routes */}
           <Route path="/dashboard" element={<ProtectedStudent><StudentDashboard /></ProtectedStudent>} />
