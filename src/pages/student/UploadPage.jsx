@@ -8,7 +8,8 @@ import Stepper from '../../components/ui/Stepper';
 import Card from '../../components/ui/Card';
 import Button from '../../components/ui/Button';
 import { orderService } from '../../services/orderService';
-import { calculatePrice, formatCurrency, formatFileSize, getErrorMessage } from '../../utils/helpers';
+import { calculateBill, formatCurrency, formatFileSize, getErrorMessage } from '../../utils/helpers';
+import BillSummary from '../../components/ui/BillSummary';
 
 const STEPS = ['Upload', 'Configure', 'Checkout'];
 
@@ -55,8 +56,8 @@ export default function UploadPage() {
     }
   }, [step]);
 
-  // Recalculate whenever shop changes — reset no other state
-  const pricing = calculatePrice(settings, selectedShop, totalPages);
+  // Recalculate whenever shop, settings, or page count changes
+  const bill = calculateBill(settings, selectedShop, totalPages);
 
   const handleFile = useCallback((f) => {
     if (!f) return;
@@ -96,11 +97,11 @@ export default function UploadPage() {
 
   // ── Price summary lines (only show non-zero extras) ──────────────────────
   const priceLines = selectedShop ? [
-    { label: `${settings.color === 'color' ? 'Color' : 'B&W'} × ${settings.printSide === 'double' ? pricing.effectivePages : totalPages} pages × ${settings.copies} cop${settings.copies > 1 ? 'ies' : 'y'}`, value: pricing.subtotal - pricing.duplexCharge - pricing.bindingCharge - pricing.laminationCharge - pricing.serviceFee },
-    pricing.duplexCharge   > 0 && { label: 'Duplex charge',    value: pricing.duplexCharge },
-    pricing.bindingCharge  > 0 && { label: `${settings.binding === 'spiral' ? 'Spiral' : 'Hard'} binding`,  value: pricing.bindingCharge },
-    pricing.laminationCharge > 0 && { label: 'Lamination',     value: pricing.laminationCharge },
-    { label: 'Service fee',  value: pricing.serviceFee },
+    { label: `${settings.color === 'color' ? 'Color' : 'B&W'} × ${bill.effectivePages} pages × ${settings.copies} cop${settings.copies > 1 ? 'ies' : 'y'}`, value: bill.printingCost },
+    bill.duplexCost      > 0 && { label: 'Duplex charge',    value: bill.duplexCost },
+    bill.bindingCost     > 0 && { label: `${settings.binding === 'spiral' ? 'Spiral' : 'Hard'} binding`, value: bill.bindingCost },
+    bill.laminationCost  > 0 && { label: 'Lamination',       value: bill.laminationCost },
+    bill.minimumAdjustment > 0 && { label: 'Min. order adjust', value: bill.minimumAdjustment },
   ].filter(Boolean) : [];
 
   return (
@@ -257,29 +258,22 @@ export default function UploadPage() {
                 </div>
               </div>
 
-              {/* Price Summary Sidebar */}
+              {/* Bill Summary Sidebar — Step 2 */}
               <div className="lg:col-span-1">
                 <div className="sticky top-24">
-                  <Card className="p-5">
-                    <h3 className="font-semibold text-gray-900 mb-4">Price Summary</h3>
-                    {!selectedShop ? (
-                      <p className="text-xs text-gray-400">Select a shop to see pricing</p>
-                    ) : (
-                      <div className="space-y-2 text-sm">
-                        {priceLines.map(({ label, value }) => (
-                          <div key={label} className="flex justify-between text-gray-600">
-                            <span className="text-xs leading-relaxed pr-2">{label}</span>
-                            <span className="shrink-0">{formatCurrency(value)}</span>
-                          </div>
-                        ))}
-                        <hr className="my-2" />
-                        <div className="flex justify-between font-bold text-gray-900 text-base">
-                          <span>Grand Total</span>
-                          <span className="text-blue-700">{formatCurrency(pricing.grandTotal)}</span>
-                        </div>
-                      </div>
-                    )}
-                  </Card>
+                  {!selectedShop ? (
+                    <div className="bg-white rounded-2xl border border-gray-200 p-5">
+                      <p className="text-sm text-gray-400 text-center">Select a shop to see pricing</p>
+                    </div>
+                  ) : (
+                    <BillSummary
+                      bill={bill}
+                      settings={settings}
+                      totalPages={totalPages}
+                      shopName={selectedShop.shopName}
+                      compact
+                    />
+                  )}
                 </div>
               </div>
 
@@ -356,36 +350,23 @@ export default function UploadPage() {
                 </Card>
               </div>
 
-              {/* Bill Summary */}
+              {/* Bill Summary — Step 3 */}
               <div className="lg:col-span-1">
-                <div className="sticky top-24">
+                <div className="sticky top-24 space-y-4">
+                  <BillSummary
+                    bill={bill}
+                    settings={settings}
+                    totalPages={totalPages}
+                    shopName={selectedShop?.shopName}
+                  />
                   <Card className="p-5">
-                    <h3 className="font-semibold text-gray-900 mb-4">Bill Summary</h3>
-                    <div className="space-y-2 text-sm">
-                      {priceLines.map(({ label, value }) => (
-                        <div key={label} className="flex justify-between text-gray-600">
-                          <span className="text-xs leading-relaxed pr-2">{label}</span>
-                          <span className="shrink-0">{formatCurrency(value)}</span>
-                        </div>
-                      ))}
-                      <hr className="my-3" />
-                      <div className="flex justify-between items-baseline">
-                        <span className="font-medium text-gray-700">Total to Pay</span>
-                        <div className="text-right">
-                          <p className="text-2xl font-bold text-gray-900">{formatCurrency(pricing.grandTotal)}</p>
-                          <span className="text-xs bg-orange-100 text-orange-700 px-2 py-0.5 rounded-full">ESTIMATED</span>
-                        </div>
-                      </div>
-                    </div>
-                    <Button fullWidth size="lg" loading={submitting} onClick={handleSubmit} className="mt-5">
+                    <Button fullWidth size="lg" loading={submitting} onClick={handleSubmit}>
                       Submit Order
                     </Button>
                     <p className="text-xs text-gray-400 text-center mt-3">
-                      By clicking submit, you agree to our <span className="text-blue-600 cursor-pointer hover:underline">Terms of Service</span>
+                      By clicking submit, you agree to our{' '}
+                      <span className="text-blue-600 cursor-pointer hover:underline">Terms of Service</span>
                     </p>
-                    <div className="mt-4 border-t pt-4">
-                      <input placeholder="Promo code" className="w-full text-sm border border-gray-200 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" />
-                    </div>
                     <p className="text-xs text-gray-400 text-center mt-3">🔒 Secure checkout powered by PrintFlow</p>
                   </Card>
                 </div>
