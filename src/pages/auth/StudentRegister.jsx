@@ -73,10 +73,19 @@ const onSubmit = async (data) => {
             <Input
               label="Phone Number"
               type="tel"
-              placeholder="+91 9876543210"
+              placeholder="9876543210"
               icon={<MdPhone />}
               error={errors.phone?.message}
-              {...register('phone', { required: 'Phone is required' })}
+              maxLength={10}
+              {...register('phone', {
+                required: 'Phone number is required',
+                pattern: {
+                  value: /^[6-9]\d{9}$/,
+                  message: 'Enter a valid Indian mobile number',
+                },
+                minLength: { value: 10, message: 'Phone number must contain exactly 10 digits' },
+                maxLength: { value: 10, message: 'Phone number must contain exactly 10 digits' },
+              })}
             />
             <Input
               label="Password"
