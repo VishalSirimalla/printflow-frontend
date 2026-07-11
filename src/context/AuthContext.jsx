@@ -50,8 +50,14 @@ export const AuthProvider = ({ children }) => {
     setRole(null);
   };
 
+  const updateUser = (updatedUser) => {
+    const merged = { ...user, ...updatedUser };
+    localStorage.setItem('pf_user', JSON.stringify(merged));
+    setUser(merged);
+  };
+
   return (
-    <AuthContext.Provider value={{ user, role, loading, login, logout, isStudent: role === 'student', isAdmin: role === 'admin' }}>
+    <AuthContext.Provider value={{ user, role, loading, login, logout, updateUser, isStudent: role === 'student', isAdmin: role === 'admin' }}>
       {children}
     </AuthContext.Provider>
   );

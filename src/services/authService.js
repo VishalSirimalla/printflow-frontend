@@ -10,4 +10,5 @@ export const authService = {
   getMe:           ()     => api.get('/auth/me'),
   forgotPassword:  (data) => api.post('/auth/forgot-password', data),
   resetPassword:   (token, data) => api.post(`/auth/reset-password/${token}`, data),
+  updateStudentProfile: (data) => api.put('/auth/student/profile', data),
 };
