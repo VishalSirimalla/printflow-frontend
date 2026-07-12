@@ -95,15 +95,6 @@ export default function UploadPage() {
     }
   };
 
-  // ── Price summary lines (only show non-zero extras) ──────────────────────
-  const priceLines = selectedShop ? [
-    { label: `${settings.color === 'color' ? 'Color' : 'B&W'} × ${bill.effectivePages} pages × ${settings.copies} cop${settings.copies > 1 ? 'ies' : 'y'}`, value: bill.printingCost },
-    bill.duplexCost      > 0 && { label: 'Duplex charge',    value: bill.duplexCost },
-    bill.bindingCost     > 0 && { label: `${settings.binding === 'spiral' ? 'Spiral' : 'Hard'} binding`, value: bill.bindingCost },
-    bill.laminationCost  > 0 && { label: 'Lamination',       value: bill.laminationCost },
-    bill.minimumAdjustment > 0 && { label: 'Min. order adjust', value: bill.minimumAdjustment },
-  ].filter(Boolean) : [];
-
   return (
     <StudentLayout>
       <div className="max-w-4xl mx-auto">

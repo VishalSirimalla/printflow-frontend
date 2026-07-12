@@ -5,7 +5,7 @@ import {
   MdLocationOn, MdAccessTime, MdPhone, MdClose, MdSearch,
   MdPrint, MdStar, MdCheckCircle, MdInfo,
 } from 'react-icons/md';
-import { Printer, Palette, FileText, BookOpen, Layers, IndianRupee, X } from 'lucide-react';
+import { Printer, Palette, FileText, BookOpen, Layers, X } from 'lucide-react';
 import StudentLayout from '../../layouts/StudentLayout';
 import Button from '../../components/ui/Button';
 import { CardSkeleton } from '../../components/ui/Skeleton';
@@ -96,7 +96,6 @@ function ShopCard({ shop, index, onSelect, onViewDetails }) {
             <PriceItem icon={BookOpen}    label="Spiral bind"  value={fmt(p.spiralBindingCharge)} />
             <PriceItem icon={BookOpen}    label="Hard bind"    value={fmt(p.hardBindingCharge)} />
             <PriceItem icon={Palette}     label="Lamination"   value={fmt(p.singlePageLamination)} />
-            <PriceItem icon={IndianRupee} label="Min. order"   value={fmt(p.minimumOrderCharge)} />
           </div>
         </div>
 
@@ -156,7 +155,6 @@ function ShopModal({ shop, onClose, onSelect }) {
     { label: 'Hard binding',           value: fmt(p.hardBindingCharge) },
     { label: 'Single-page lamination', value: fmt(p.singlePageLamination) },
     { label: 'Document lamination',    value: fmt(p.documentLamination) },
-    { label: 'Minimum order',          value: fmt(p.minimumOrderCharge) },
   ];
 
   return (

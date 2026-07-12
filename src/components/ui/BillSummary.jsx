@@ -20,12 +20,11 @@ export default function BillSummary({ bill, settings, totalPages, shopName, comp
     duplexCost,
     bindingCost,
     laminationCost,
-    minimumAdjustment,
     grandTotal,
   } = bill;
 
   const printLabel = settings.color === 'color' ? 'Color' : 'Black & White';
-  const sideLabel  = settings.printSide === 'double' ? 'Duplex' : 'Simplex';
+  const sideLabel  = settings.printSide === 'double' ? 'Double Side' : 'Single Side';
   const bindLabel  = settings.binding === 'spiral' ? 'Spiral Binding'
                    : settings.binding === 'hard'   ? 'Hard Binding'
                    : 'Binding';
@@ -35,14 +34,13 @@ export default function BillSummary({ bill, settings, totalPages, shopName, comp
 
   const rows = [
     {
-      label: `Printing (${printLabel} · ${settings.paperSize} · ${settings.copies} cop${settings.copies > 1 ? 'ies' : 'y'} · ${totalPrintablePages} pages)`,
+      label: 'Printing Cost',
       value: printingCost,
       always: true,
     },
-    { label: `${sideLabel} charge`,  value: duplexCost,        always: false },
-    { label: bindLabel,              value: bindingCost,        always: false },
-    { label: lamLabel,               value: laminationCost,     always: false },
-    { label: 'Minimum order adjust', value: minimumAdjustment,  always: false },
+    ...(duplexCost > 0 ? [{ label: sideLabel, value: duplexCost, always: false }] : []),
+    ...(bindingCost > 0 ? [{ label: bindLabel, value: bindingCost, always: false }] : []),
+    ...(laminationCost > 0 ? [{ label: lamLabel, value: laminationCost, always: false }] : []),
   ];
 
   const visibleRows = compact

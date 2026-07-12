@@ -107,7 +107,6 @@ export default function AdminProfile() {
           hardBindingCharge:    pr.hardBindingCharge    ?? 80.0,
           singlePageLamination: pr.singlePageLamination ?? 15.0,
           documentLamination:   pr.documentLamination   ?? 50.0,
-          minimumOrderCharge:   pr.minimumOrderCharge   ?? 10.0,
           openingTime: s.openingTime || '09:00',
           closingTime: s.closingTime || '20:00',
         });
@@ -297,14 +296,6 @@ export default function AdminProfile() {
                 <div className="grid grid-cols-3 gap-4">
                   <PriceInput label="Single Page"         name="singlePageLamination" register={rp} errors={pricingErrors} placeholder="15.00" />
                   <PriceInput label="Document Lamination" name="documentLamination"   register={rp} errors={pricingErrors} placeholder="50.00" />
-                </div>
-              </div>
-
-              {/* Minimum Order ────────────────────────────────────────── */}
-              <div>
-                <SectionHeading icon={IndianRupee} title="Minimum Order Charge" color="text-gray-600 bg-gray-100" />
-                <div className="grid grid-cols-3 gap-4">
-                  <PriceInput label="Minimum charge per order" name="minimumOrderCharge" register={rp} errors={pricingErrors} placeholder="10.00" />
                 </div>
               </div>
 

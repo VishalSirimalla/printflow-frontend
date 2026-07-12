@@ -7,33 +7,36 @@ export const formatFileSize = (bytes) => {
   return `${parseFloat((bytes / Math.pow(k, i)).toFixed(1))} ${sizes[i]}`;
 };
 
+const toCurrencyValue = (value) => {
+  const numericValue = Number(value);
+  return Number.isFinite(numericValue) ? numericValue : 0;
+};
+
 // Calculate print bill — mirrors backend utils/calculateBill.js exactly
 export const calculateBill = (settings, shop, totalPages) => {
   if (!shop || !totalPages) {
-    return { totalPrintablePages: 0, effectivePages: 0, copies: 1, pricePerPage: 0, printingCost: 0, duplexCost: 0, bindingCost: 0, laminationCost: 0, minimumAdjustment: 0, grandTotal: 0 };
+    return { totalPrintablePages: 0, effectivePages: 0, copies: 1, pricePerPage: 0, printingCost: 0, duplexCost: 0, bindingCost: 0, laminationCost: 0, grandTotal: 0, breakdown: { printingCost: 0, duplexCost: 0, bindingCost: 0, laminationCost: 0, grandTotal: 0 } };
   }
-  const { color = 'bw', printSide = 'single', paperSize = 'A4', copies = 1, binding = 'none', lamination = 'none' } = settings;
+  const { color = 'bw', printSide = 'single', paperSize = 'A4', copies = 1, binding = 'none', lamination = 'none' } = settings || {};
   const p = shop.pricing || {};
 
-  let pricePerPage = color === 'color' ? (p.colorPrice ?? 5) : (p.blackWhitePrice ?? 1.5);
-  if (paperSize === 'A3')    pricePerPage += (p.a3Price    ?? 10);
-  if (paperSize === 'Legal') pricePerPage += (p.legalPrice ?? 8);
+  let pricePerPage = color === 'color' ? toCurrencyValue(p.colorPrice) : toCurrencyValue(p.blackWhitePrice);
+  if (paperSize === 'A3')    pricePerPage += toCurrencyValue(p.a3Price);
+  if (paperSize === 'Legal') pricePerPage += toCurrencyValue(p.legalPrice);
 
   const effectivePages = printSide === 'double' ? Math.ceil(totalPages / 2) : totalPages;
-  const duplexCost     = printSide === 'double' ? +((p.duplexCharge ?? 0) * effectivePages).toFixed(2) : 0;
-  const printingCost   = +(pricePerPage * effectivePages * copies).toFixed(2);
+  const duplexCost = printSide === 'double' ? +(toCurrencyValue(p.duplexCharge) * effectivePages).toFixed(2) : 0;
+  const printingCost = +(pricePerPage * effectivePages * copies).toFixed(2);
 
   let bindingCost = 0;
-  if (binding === 'spiral') bindingCost = p.spiralBindingCharge ?? 30;
-  if (binding === 'hard')   bindingCost = p.hardBindingCharge   ?? 80;
+  if (binding === 'spiral') bindingCost = +toCurrencyValue(p.spiralBindingCharge).toFixed(2);
+  if (binding === 'hard')   bindingCost = +toCurrencyValue(p.hardBindingCharge).toFixed(2);
 
   let laminationCost = 0;
-  if (lamination === 'single')   laminationCost = p.singlePageLamination ?? 15;
-  if (lamination === 'document') laminationCost = p.documentLamination   ?? 50;
+  if (lamination === 'single')   laminationCost = +toCurrencyValue(p.singlePageLamination).toFixed(2);
+  if (lamination === 'document') laminationCost = +toCurrencyValue(p.documentLamination).toFixed(2);
 
-  const minimum   = p.minimumOrderCharge ?? 0;
-  const rawTotal  = printingCost + duplexCost + bindingCost + laminationCost;
-  const minAdjust = rawTotal < minimum ? +(minimum - rawTotal).toFixed(2) : 0;
+  const grandTotal = +(printingCost + duplexCost + bindingCost + laminationCost).toFixed(2);
 
   return {
     totalPrintablePages: effectivePages * copies,
@@ -44,8 +47,14 @@ export const calculateBill = (settings, shop, totalPages) => {
     duplexCost,
     bindingCost,
     laminationCost,
-    minimumAdjustment: minAdjust,
-    grandTotal: +(rawTotal + minAdjust).toFixed(2),
+    grandTotal,
+    breakdown: {
+      printingCost,
+      duplexCost,
+      bindingCost,
+      laminationCost,
+      grandTotal,
+    },
   };
 };
 
